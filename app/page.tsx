@@ -3,6 +3,7 @@
 import { useMutation, useQuery } from "@apollo/client";
 import gql from "graphql-tag";
 import { FormEvent, useState } from "react";
+import { FaRegTrashCan } from "react-icons/fa6";
 
 const GET_USERS = gql`
   query GetUsers {
@@ -47,10 +48,17 @@ const TOGGLE_POST = gql`
   }
 `;
 
+const DELETE_POST = gql`
+  mutation DeletePost($id: ID!) {
+    deletePost(id: $id)
+  }
+`;
+
 export default function Home() {
   const { loading, error, data, refetch } = useQuery(GET_USERS);
   const [createPost, { loading: postLoading }] = useMutation(CREATE_POST);
   const [publishPost] = useMutation(TOGGLE_POST);
+  const [deletePost] = useMutation(DELETE_POST);
 
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
@@ -141,27 +149,46 @@ export default function Home() {
         {data.users.map((user, idx: number) => (
           <div className="mb-10" key={idx}>
             <li className="text-2xl font-bold text-gray-500">@{user.name}</li>
-            {user.posts.map((post, id: number) => (
-              <div
-                key={id}
-                className="flex items-center justify-between bg-gray-600 my-4 px-4 py-2 rounded-lg"
-              >
-                <div>
-                  <h1 className="text-2xl font-bold">{post.title}</h1>
-                  <p>{post.content}</p>
-                  <button
-                    onClick={() => handleToggle(post.id)}
-                    className={
-                      post.published
-                        ? "bg-green-400 text-black px-2 py-1 rounded w-max cursor-pointer"
-                        : "bg-red-400 text-white px-2 py-1 rounded w-max cursor-pointer"
-                    }
-                  >
-                    {post.published ? "Published" : "Draft"}
-                  </button>
-                </div>
+            {user.posts.length === 0 ? (
+              <div>
+                <h1 className="text-xl">no posts</h1>
               </div>
-            ))}
+            ) : (
+              <div>
+                {user.posts.map((post, id: number) => (
+                  <div
+                    key={id}
+                    className="flex items-center justify-between bg-gray-600 my-4 px-4 py-2 rounded-lg"
+                  >
+                    <div>
+                      <h1 className="text-2xl font-bold">{post.title}</h1>
+                      <p>{post.content}</p>
+                      <button
+                        onClick={() => handleToggle(post.id)}
+                        className={
+                          post.published
+                            ? "bg-green-400 text-black px-2 py-1 rounded w-max cursor-pointer"
+                            : "bg-red-400 text-white px-2 py-1 rounded w-max cursor-pointer"
+                        }
+                      >
+                        {post.published ? "Published" : "Draft"}
+                      </button>
+                    </div>
+                    <button
+                      onClick={() => {
+                        deletePost({ variables: { id: post.id } });
+                        refetch();
+                      }}
+                    >
+                      <FaRegTrashCan
+                        size={40}
+                        className="bg-red-600 p-2 rounded-xl"
+                      />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         ))}
       </ul>

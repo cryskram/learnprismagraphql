@@ -27,5 +27,6 @@ export const typeDefs = gql`
     createUser(email: String!, name: String): User
     createPost(title: String!, content: String, authorId: ID!): Post
     publishPost(id: ID!): Post
+    deletePost(id: ID!): Boolean!
   }
 `;

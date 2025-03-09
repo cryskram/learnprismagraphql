@@ -57,6 +57,16 @@ export const resolvers = {
         data: { published: !getPost?.published, updatedAt: new Date() },
       });
     },
+
+    deletePost: async (_: never, { id }: { id: string }) => {
+      try {
+        await prisma.post.delete({ where: { id } });
+        return true;
+      } catch (e) {
+        console.log("Error:", e);
+        return false;
+      }
+    },
   },
 
   User: {
