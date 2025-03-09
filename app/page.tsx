@@ -50,7 +50,7 @@ const TOGGLE_POST = gql`
 export default function Home() {
   const { loading, error, data, refetch } = useQuery(GET_USERS);
   const [createPost, { loading: postLoading }] = useMutation(CREATE_POST);
-  const [publishPost, { loading: toggleLoading }] = useMutation(TOGGLE_POST);
+  const [publishPost] = useMutation(TOGGLE_POST);
 
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
@@ -138,13 +138,13 @@ export default function Home() {
         </form>
       </div>
       <ul className="w-1/2 mx-auto">
-        {data.users.map((user, idx) => (
+        {data.users.map((user, idx: number) => (
           <div className="mb-10" key={idx}>
-            <li>{user.name}</li>
-            {user.posts.map((post, id) => (
+            <li className="text-2xl font-bold text-gray-500">@{user.name}</li>
+            {user.posts.map((post, id: number) => (
               <div
                 key={id}
-                className="flex items-center justify-between bg-gray-600 m-2 px-4 py-2 rounded-lg"
+                className="flex items-center justify-between bg-gray-600 my-4 px-4 py-2 rounded-lg"
               >
                 <div>
                   <h1 className="text-2xl font-bold">{post.title}</h1>
